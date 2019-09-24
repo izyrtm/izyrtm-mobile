@@ -1,0 +1,233 @@
+import deepFreeze from 'deep-freeze';
+
+import {
+  REALM_INIT,
+  PRESENCE_RESPONSE,
+  EVENT_PRESENCE,
+  ACCOUNT_SWITCH,
+} from '../../actionConstants';
+import presenceReducers from '../presenceReducers';
+
+const currentTimestamp = Date.now() / 1000;
+
+describe('presenceReducers', () => {
+  test('handles unknown action and no state by returning initial state', () => {
+    const newState = presenceReducers(undefined, {});
+    expect(newState).toBeDefined();
+  });
+
+  test('on unrecognized action, returns input state unchanged', () => {
+    const prevState = deepFreeze({ hello: 'world' });
+
+    const newState = presenceReducers(prevState, {});
+    expect(newState).toBe(prevState);
+  });
+
+  describe('REALM_INIT', () => {
+    test('when `presence` data is provided init state with it', () => {
+      const presenceData = {
+        'email@example.com': {
+          aggregated: {
+            client: 'website',
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+      };
+      const initialState = deepFreeze({});
+      const action = deepFreeze({
+        type: REALM_INIT,
+        data: {
+          presences: presenceData,
+        },
+      });
+
+      const actualState = presenceReducers(initialState, action);
+
+      expect(actualState).toEqual(presenceData);
+    });
+
+    test('when no `presence` data is given reset state', () => {
+      const initialState = deepFreeze({
+        'email@example.com': {
+          aggregated: {
+            client: 'website',
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+      });
+      const action = deepFreeze({
+        type: REALM_INIT,
+        data: {},
+      });
+      const expectedState = {};
+
+      const actualState = presenceReducers(initialState, action);
+
+      expect(actualState).toEqual(expectedState);
+    });
+  });
+
+  describe('PRESENCE_RESPONSE', () => {
+    test('merges a single user in presence response', () => {
+      const presence = {
+        'email@example.com': {
+          aggregated: {
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+      };
+      const action = deepFreeze({
+        type: PRESENCE_RESPONSE,
+        presence,
+        serverTimestamp: 1474527537,
+      });
+
+      const prevState = deepFreeze({
+        'email@example.com': {},
+      });
+
+      const expectedState = {
+        'email@example.com': {
+          aggregated: {
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+      };
+
+      const newState = presenceReducers(prevState, action);
+
+      expect(newState).toEqual(expectedState);
+    });
+
+    test('merges multiple users in presence response', () => {
+      const prevState = deepFreeze({
+        'email@example.com': {},
+        'janedoe@example.com': {},
+      });
+
+      const presence = {
+        'email@example.com': {
+          aggregated: {
+            client: 'website',
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+        'johndoe@example.com': {
+          website: {
+            status: 'active',
+            timestamp: 345,
+            client: 'website',
+          },
+        },
+      };
+      const action = deepFreeze({
+        type: PRESENCE_RESPONSE,
+        presence,
+        serverTimestamp: 12345,
+      });
+
+      const expectedState = {
+        'email@example.com': {
+          aggregated: {
+            client: 'website',
+            status: 'active',
+            timestamp: 123,
+          },
+        },
+        'johndoe@example.com': {
+          website: {
+            status: 'active',
+            timestamp: 345,
+            client: 'website',
+          },
+        },
+        'janedoe@example.com': {},
+      };
+
+      const newState = presenceReducers(prevState, action);
+
+      expect(newState).toEqual(expectedState);
+    });
+  });
+
+  describe('EVENT_PRESENCE', () => {
+    test('merges a single user presence', () => {
+      const prevState = deepFreeze({
+        'email@example.com': {
+          aggregated: {
+            client: 'website',
+            status: 'idle',
+            timestamp: currentTimestamp - 20,
+          },
+          website: {
+            status: 'idle',
+            timestamp: currentTimestamp - 20,
+          },
+        },
+      });
+
+      const action = deepFreeze({
+        type: EVENT_PRESENCE,
+        email: 'email@example.com',
+        server_timestamp: 200,
+        presence: {
+          zulipMobile: {
+            client: 'zulipMobile',
+            status: 'active',
+            timestamp: currentTimestamp - 10,
+          },
+        },
+      });
+
+      const expectedState = {
+        'email@example.com': {
+          aggregated: {
+            client: 'zulipMobile',
+            status: 'active',
+            timestamp: currentTimestamp - 10,
+          },
+          website: {
+            status: 'idle',
+            timestamp: currentTimestamp - 20,
+          },
+          zulipMobile: {
+            client: 'zulipMobile',
+            status: 'active',
+            timestamp: currentTimestamp - 10,
+          },
+        },
+      };
+
+      const newState = presenceReducers(prevState, action);
+
+      expect(newState).toEqual(expectedState);
+    });
+  });
+
+  describe('ACCOUNT_SWITCH', () => {
+    test('resets state to initial state', () => {
+      const initialState = deepFreeze([
+        {
+          full_name: 'Some Guy',
+          email: 'email@example.com',
+          status: 'offline',
+        },
+      ]);
+
+      const action = deepFreeze({
+        type: ACCOUNT_SWITCH,
+      });
+
+      const expectedState = {};
+
+      const actualState = presenceReducers(initialState, action);
+
+      expect(actualState).toEqual(expectedState);
+    });
+  });
+});

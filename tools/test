@@ -1,0 +1,184 @@
+#!/bin/bash
+set -e
+
+## CLI PARSING
+
+usage() {
+    cat >&2 <<EOF
+usage: tools/test [--full | --diff COMMIT] [SUITES]
+
+Run our tests.
+
+By default, run only on files changed in this branch,
+as found by \`tools/info changed-files\`.
+
+Options:
+  --coverage  Collect test-coverage information.  Only meaningful
+              with --full.
+  --fix       Fix issues found, where possible.
+  --full      Run on all files, not only changed files.
+  --diff COMMIT
+              Run only on files that differ from the given commit.
+              (E.g., \`--diff @\` for files with uncommitted changes;
+              \`--diff @~10\` for files changed in last 10 commits; or see
+              \`git help revisions\` for many more ways to name a commit.)
+
+Suites:
+  android
+  flow
+  lint
+  jest
+  prettier
+  spell
+
+By default, all suites but \`spell\` are run.
+EOF
+    exit 2
+}
+
+coverage=
+files=branch
+fix=
+suites=()
+while (( $# )); do
+    case "$1" in
+        --coverage) coverage=1; shift;;
+        --diff) shift; files=diff:"$1"; shift;;
+        --full) files=full; shift;;
+        --fix) fix=1; shift;;
+        android|flow|lint|jest|prettier|spell)
+            suites+=("$1"); shift;;
+        *) usage;;
+    esac
+done
+
+if [ -z "$suites" ]; then
+    suites=(android flow lint jest prettier)
+fi
+
+
+## EXECUTION
+
+rootdir=$(git rev-parse --show-toplevel)
+cd "$rootdir"
+
+PATH=node_modules/.bin:"$PATH"
+
+files_js() {
+    case "$files" in
+        full)
+            echo src/
+            ;;
+        branch)
+            tools/info changed-files | grep '^src/.*\.js$' || :
+            ;;
+        diff:*)
+            commitish="${files#diff:}"
+            git diff --name-only "$commitish" | grep '^src/.*\.js$' || :
+            ;;
+    esac
+}
+
+run_android() {
+    # Unlike some others, this inspects "$files" for itself.
+    case "$files" in
+        full)
+            ;;
+        branch)
+            git diff --quiet "$(tools/info base-commit)" android/ \
+                && return
+            ;;
+        diff:*)
+            git diff --quiet "${files#diff:}" android/ \
+                && return
+            ;;
+    esac
+    (
+        cd android
+
+        ./gradlew -q assembleDebug assembleDebugUnitTest || exit
+
+        # The `-q` suppresses noise from warnings about obsolete build config
+        # in our dependencies from the React Native ecosystem.
+        # But it also suppresses the names of tests that failed.
+        # So on failure, rerun without it.
+        ./gradlew -q testDebugUnitTest \
+            || ./gradlew testDebugUnitTest || exit
+    )
+}
+
+run_lint() {
+    (( $# )) || return 0
+    eslint ${fix:+--fix} --max-warnings=0 "$@"
+}
+
+run_jest() {
+    # Unlike some others, this inspects "$files" for itself.
+    jest_args=()
+    case "$files" in
+        full)
+            if [ -n "$coverage" ]; then
+                jest_args+=( --coverage )
+            fi
+            ;;
+        branch)
+            jest_args+=( --changedSince "$(tools/info upstream-ref)" )
+            ;;
+        diff:*)
+            file_list=( $(files_js) )
+            (( ${#file_list[@]} )) || return 0
+            jest_args+=( --findRelatedTests "${file_list[@]}" )
+            ;;
+    esac
+    jest "${jest_args[@]}"
+}
+
+run_prettier() {
+    (( $# )) || return 0
+    patterns=( "${@/%\///**/*.js}" ) # replace trailing `/` with `/**/*.js`
+    prettier-eslint \
+       ${fix:+--write} \
+      --list-different \
+      --eslint-config-path ./tools/formatting.eslintrc.yaml \
+      "${patterns[@]}"
+}
+
+run_spell() {
+    (( $# )) || return 0
+    eslint --no-eslintrc -c tools/spellcheck.eslintrc.yaml "$@"
+}
+
+failed=()
+for suite in "${suites[@]}"; do
+    echo "Running $suite..."
+    case "$suite" in
+        android)
+            run_android
+            ;;
+        flow)
+            flow
+            ;;
+        lint)
+            run_lint $(files_js)
+            ;;
+        jest)
+            run_jest
+            ;;
+        prettier)
+            run_prettier $(files_js)
+            ;;
+        spell)
+            run_spell $(files_js)
+            ;;
+    esac || failed+=($suite)
+done
+
+if [ -n "$failed" ]; then
+    cat >&2 <<EOF
+
+FAILED: ${failed[*]}
+EOF
+    exit 1
+fi
+
+echo "Passed!"

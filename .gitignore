@@ -1,0 +1,84 @@
+# OSX
+#
+.DS_Store
+
+# Xcode
+#
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+
+# Android/IJ
+#
+*.iml
+android/.idea/*
+!android/.idea/vcs.xml
+!android/.idea/codeStyles/
+.gradle
+local.properties
+
+# node.js
+#
+node_modules/
+npm-debug.log
+
+# BUCK
+buck-out/
+\.buckd/
+android/app/libs
+android/keystores/debug.keystore
+
+### ^
+### The portion of this file above this line comes from RN upstream's
+### template.  We leave that part unchanged as much as we can, to help
+### keep upgrades easy.
+###
+
+# Each pattern should have a leading slash, unless it really is meant to
+# apply relative to any subdirectory as well as the root.
+#
+# (The gitignore semantics are a bit subtle; a slash in the middle suffices,
+# but we add a leading slash then too to make it clear.  EIBTI.)
+
+# Yarn
+/yarn-error.log
+
+# VS Code: default Java extension
+/android/.project
+/android/.settings/
+
+# VS Code: debugger
+/.vscode/.react/
+
+# Coverage tools in our package.json scripts
+/coverage/
+/flow-coverage/
+
+# Transifex, for a maintainer syncing translations up and down
+/.transifexrc
+
+# Android release builds
+*.keystore
+*.keystore.gpg
+/android/release-keystore.properties
+
+# fastlane
+# See: https://docs.fastlane.tools/best-practices/source-control/
+/fastlane/report.xml
+/fastlane/Preview.html
+/fastlane/screenshots
+/fastlane/test_output
