@@ -74,7 +74,7 @@ class WelcomeTestScreen extends PureComponent<Props, State> {
         <SmartUrlInput
           style={styles.marginVertical}
           navigation={navigation}
-          defaultOrganization="cybg0"
+          defaultOrganization="cybg"
           protocol="https://"
           append=".zulipchat.com"
           defaultValue={initialRealm}
