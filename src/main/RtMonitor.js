@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 
-import type { Dispatch } from '../types';
+import type { Dispatch, Stream } from '../types';
 import { connect } from '../react-redux';
 // import { Screen, OptionButton } from '../common';
 // import openLink from '../utils/openLink';
@@ -13,6 +13,7 @@ import { WebView } from 'react-native-webview';
 type Props = {|
   dispatch: Dispatch,
   realm: string,
+  stream: Stream,
 |};
 
 class RtMonitor extends PureComponent<Props> {

@@ -114,5 +114,5 @@ export const navigateToUserStatus = (): NavigateAction =>
 export const navigateToWelcomeTest = (): NavigateAction =>
   NavigationActions.navigate({ routeName: 'welcome-test' });
 
-export const navigateToRtMonitor = (): NavigateAction =>
-  NavigationActions.navigate({ routeName: 'rtmonitor' });
+export const navigateToRtMonitor = (streamId: number): NavigateAction =>
+  NavigationActions.navigate({ routeName: 'rtmonitor', params: { streamId } });

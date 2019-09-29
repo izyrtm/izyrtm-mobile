@@ -16,6 +16,7 @@ import InfoNavButtonPrivate from './InfoNavButtonPrivate';
 import InfoNavButtonGroup from './InfoNavButtonGroup';
 import ExtraNavButtonStream from './ExtraNavButtonStream';
 import ExtraNavButtonTopic from './ExtraNavButtonTopic';
+import MonitorNavButtonStream from './MonitorNavButtonStream';
 
 type Props = {| color: string, narrow: Narrow |};
 type NarrowNavButton = ComponentType<Props>;
@@ -42,6 +43,16 @@ const extraButtonHandlers: NarrowNavButtonCandidate[] = [
   { isFunc: isGroupNarrow, ButtonComponent: null },
 ];
 
+// 신규 모니터링 추가(2019.09.26)
+const monitorButtonHandlers: NarrowNavButtonCandidate[] = [
+  { isFunc: isHomeNarrow, ButtonComponent: null },
+  { isFunc: isSpecialNarrow, ButtonComponent: null },
+  { isFunc: isStreamNarrow, ButtonComponent: MonitorNavButtonStream },
+  { isFunc: isTopicNarrow, ButtonComponent: ExtraNavButtonTopic },
+  { isFunc: isPrivateNarrow, ButtonComponent: null },
+  { isFunc: isGroupNarrow, ButtonComponent: null },
+];
+
 const makeButton = (handlers): NarrowNavButton => props => {
   const handler = handlers.find(x => x.isFunc(props.narrow)) || null;
   const SpecificButton = handler && handler.ButtonComponent;
@@ -51,3 +62,5 @@ const makeButton = (handlers): NarrowNavButton => props => {
 export const InfoButton = makeButton(infoButtonHandlers);
 
 export const ExtraButton = makeButton(extraButtonHandlers);
+
+export const MonitorButton = makeButton(monitorButtonHandlers);

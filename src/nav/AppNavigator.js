@@ -35,6 +35,7 @@ import WelcomeScreen from '../start/WelcomeScreen';
 import EmojiPickerScreen from '../emoji/EmojiPickerScreen';
 import LegalScreen from '../settings/LegalScreen';
 import UserStatusScreen from '../user-status/UserStatusScreen';
+import MonitorSteam from '../streams/MonitorSteam';
 
 export default StackNavigator(
   // $FlowFixMe react-navigation types :-/ -- see a36814e80
@@ -73,6 +74,8 @@ export default StackNavigator(
     welcome: { screen: WelcomeScreen },
     legal: { screen: LegalScreen },
     'user-status': { screen: UserStatusScreen },
+    // 모니터링 화면 추가 2019.09.25
+    rtmonitor: { screen: MonitorSteam },
   },
   {
     initialRouteName: 'main',

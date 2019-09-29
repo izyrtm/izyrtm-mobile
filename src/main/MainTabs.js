@@ -16,6 +16,7 @@ import ProfileCard from '../account-info/ProfileCard';
 
 export default TabNavigator(
   {
+    /* 웹뷰 테스트
     rtmonitor: {
       screen: RtMonitor,
       navigationOptions: {
@@ -24,7 +25,8 @@ export default TabNavigator(
           <IconInbox size={24} color={props.tintColor} />
         ),
       },
-    },
+    }, */
+
     home: {
       screen: HomeTab,
       navigationOptions: {

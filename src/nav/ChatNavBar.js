@@ -11,7 +11,7 @@ import NavButton from './NavButton';
 import { DEFAULT_TITLE_BACKGROUND_COLOR, getTitleBackgroundColor } from '../title/titleSelectors';
 import { foregroundColorFromBackground } from '../utils/color';
 import { navigateBack } from '../actions';
-import { ExtraButton, InfoButton } from '../title-buttons/titleButtonFromNarrow';
+import { ExtraButton, InfoButton, MonitorButton } from '../title-buttons/titleButtonFromNarrow';
 
 type SelectorProps = {|
   backgroundColor: string,
@@ -33,6 +33,7 @@ class ChatNavBar extends PureComponent<Props> {
         : foregroundColorFromBackground(backgroundColor);
 
     return (
+      // MonitorButton 신규버튼 추가(모니터링용 2019.09.25)
       <View style={[styles.navBar, { backgroundColor }]}>
         <NavButton
           name="arrow-left"
@@ -42,7 +43,7 @@ class ChatNavBar extends PureComponent<Props> {
           }}
         />
         <Title color={color} narrow={narrow} />
-        <ExtraButton color={color} narrow={narrow} />
+        <MonitorButton color={color} narrow={narrow} />
         <ExtraButton color={color} narrow={narrow} />
         <InfoButton color={color} narrow={narrow} />
       </View>
