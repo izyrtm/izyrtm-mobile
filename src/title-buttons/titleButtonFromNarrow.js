@@ -48,7 +48,7 @@ const monitorButtonHandlers: NarrowNavButtonCandidate[] = [
   { isFunc: isHomeNarrow, ButtonComponent: null },
   { isFunc: isSpecialNarrow, ButtonComponent: null },
   { isFunc: isStreamNarrow, ButtonComponent: MonitorNavButtonStream },
-  { isFunc: isTopicNarrow, ButtonComponent: ExtraNavButtonTopic },
+  { isFunc: isTopicNarrow, ButtonComponent: MonitorNavButtonStream },
   { isFunc: isPrivateNarrow, ButtonComponent: null },
   { isFunc: isGroupNarrow, ButtonComponent: null },
 ];

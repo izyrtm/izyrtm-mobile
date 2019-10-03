@@ -29,7 +29,7 @@ class MonitorNavButtonStream extends PureComponent<Props> {
   render() {
     const { color } = this.props;
 
-    return <NavButton name="info" color={color} onPress={this.handlePress} />;
+    return <NavButton name="eye" color={color} onPress={this.handlePress} />;
   }
 }
 

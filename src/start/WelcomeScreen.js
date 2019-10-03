@@ -15,16 +15,16 @@ class WelcomeScreen extends PureComponent<Props> {
   render() {
     const { dispatch } = this.props;
     return (
-      <Screen title="Welcome! Monbot!" centerContent padding canGoBack={false}>
+      <Screen title="Welcome! iZyRTM!" centerContent padding canGoBack={false}>
         <ZulipButton
-          text="I have a Monbot account"
+          text="I have a iZyRTM account"
           onPress={() => {
             dispatch(navigateToRealmScreen(''));
           }}
         />
         <ViewPlaceholder height={20} />
         <ZulipButton
-          text="I am new to Monbot"
+          text="I am new to iZyRTM"
           onPress={() => {
             dispatch(navigateToWelcomeHelp());
           }}
