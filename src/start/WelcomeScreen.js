@@ -29,13 +29,6 @@ class WelcomeScreen extends PureComponent<Props> {
             dispatch(navigateToWelcomeHelp());
           }}
         />
-        <ViewPlaceholder height={20} />
-        <ZulipButton
-          text="I am 테스트 zulip"
-          onPress={() => {
-            dispatch(navigateToWelcomeTest());
-          }}
-        />
       </Screen>
     );
   }

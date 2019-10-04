@@ -22,14 +22,14 @@ class MonitorStream extends PureComponent<Props> {
     const { stream, subscription } = this.props;
     const target1 = 'zulip';
     const target2 = 'web';
-    let monuri = '';
+    const monuri = 'https://monbot.hopto.org:3000/d/z2yCOGpWz/docker-and-system-monitoring';
     // const monuri = `http://naver.com/${stream.stream_id}`;
     // eslint-disable-next-line no-cond-assign
-    if (stream.name === 'daum') {
-      monuri = `https://github.com/Byeoung/${target1}`;
-    } else {
-      monuri = `https://github.com/Byeoung/${target2}`;
-    }
+    // if (stream.name === 'daum') {
+    //   monuri = `https://github.com/Byeoung/${target1}`;
+    // } else {
+    //   monuri = `https://github.com/Byeoung/${target2}`;
+    // }
 
     return (
       <Screen title="Monitoring">
