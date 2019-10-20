@@ -16,7 +16,7 @@ export default class WelcomeHelpScreen extends PureComponent<{}> {
       <Screen title="Help" centerContent padding>
         <RawLabel
           style={styles.helpText}
-          text={`Welcome to Zulip!
+          text={`Welcome to iZyRTM!
 
 You'll need to first create an account from your computer. If you're not sure where to start, go to monbot.hopto.org from your web browser.
 
